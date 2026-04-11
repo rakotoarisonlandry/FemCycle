@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
+const mongoose = require("mongoose");
 
-const cycleSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+const cycleSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   startDate: Date,
   cycleLength: Number
 }, { timestamps: true });
 
-export default model("Cycle", cycleSchema);
+module.exports = mongoose.model("Cycle", cycleSchema);
