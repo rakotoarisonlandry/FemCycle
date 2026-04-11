@@ -4,36 +4,59 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 exports.forgotPassword = async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
+  try {
+    const user = await User.findOne({ email: req.body.email });
 
-  const resetToken = crypto.randomBytes(32).toString("hex");
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
 
-  user.resetToken = resetToken;
-  user.resetTokenExpire = Date.now() + 10 * 60 * 1000;
+    // Générer token
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
-  await user.save();
-  
-  res.json({ resetToken }); // ⚠️ en prod → email
+    user.resetToken = resetToken;
+    user.resetTokenExpire = Date.now() + 10 * 60 * 1000; // 10 min
+
+    await user.save();
+
+    // ⚠️ En production → envoyer par email
+    res.json({
+      msg: "Reset token generated",
+      resetToken
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 exports.resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
+  try {
+    const { token, newPassword } = req.body;
 
-  const user = await User.findOne({
-    resetToken: token,
-    resetTokenExpire: { $gt: Date.now() }
-  });
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpire: { $gt: Date.now() }
+    });
 
-  if (!user) return res.status(400).json({ msg: "Invalid token" });
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid or expired token" });
+    }
 
-  user.password = await bcrypt.hash(newPassword, 10);
-  user.resetToken = null;
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  await user.save();
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpire = null;
 
-  res.json({ msg: "Password updated" });
+    await user.save();
+
+    res.json({ msg: "Password reset successful" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
-
 exports.register = async (req, res) => {
   const { email, password } = req.body;
 
