@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const { default: rateLimit } = require("express-rate-limit");
 
 const app = express();
 
@@ -7,10 +8,38 @@ app.use(cors());
 app.use(express.json());
 
 // routes ici
-app.get("/", (req, res) => {
-  res.send("FemCycle API running");
-});
-app.use("/api/v1/auth", require("./routes/authRoutes"));
-app.use("/api/v1/cycles", require("./routes/cycleRoutes"));
+app.get(
+  "/",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  (req, res) => {
+    res.send("FemCycle API running");
+  },
+);
+app.use(
+  "/api",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+);
+app.use(
+  "/api/v1/auth",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/authRoutes"),
+);
+app.use(
+  "/api/v1/cycles",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/cycleRoutes"),
+);
 
 module.exports = app;
