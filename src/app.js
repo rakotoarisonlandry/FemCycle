@@ -10,5 +10,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("FemCycle API running");
 });
+app.use("/api/v1/auth", require("./routes/authRoutes"));
+app.use("/api/v1/cycles", require("./routes/cycleRoutes"));
 
 module.exports = app;
