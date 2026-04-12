@@ -19,7 +19,6 @@ exports.forgotPassword = async (req, res) => {
 
     await user.save();
 
-    // ⚠️ En production → envoyer par email
     res.json({
       msg: "Reset token generated",
       resetToken
