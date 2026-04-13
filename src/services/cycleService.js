@@ -30,7 +30,7 @@ function calculateCycle(startDate, cycleLength = 28) {
     day: currentDay,
     phase,
     status,
-    ovulationDay
+    ovulationDay,
   };
 }
 

@@ -7,6 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(
+  "/api/v1/logs",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/logRoutes"),
+);
 // routes ici
 app.get(
   "/",
