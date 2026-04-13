@@ -9,8 +9,9 @@ const {
   updateLog,
   deleteLog,
 } = require("../controllers/logController");
+const { body } = require("express-validator");
 
-router.post("/", auth, createLog);
+router.post("/", auth,body("pain").isInt({ min: 0, max: 10 }), createLog);
 router.get("/", auth, getLogs);
 router.get("/:date", auth, getLogByDate);
 router.put("/:id", auth, updateLog);
