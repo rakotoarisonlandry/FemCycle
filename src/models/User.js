@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema({
   refreshToken: String,
   resetToken: String,
   resetTokenExpire: Date,
+  notificationSettings: {
+  periodReminder: { type: Boolean, default: true },
+  ovulationAlert: { type: Boolean, default: true },
+  dailyReminder: { type: Boolean, default: false }
+}
 });
 
 module.exports = mongoose.model("User", userSchema);
