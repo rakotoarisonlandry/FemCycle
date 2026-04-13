@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  email: String,
+  email: {
+    type: String,
+    required: [true, "L'email est requis"],
+    unique: true,
+    lowercase: true,
+    trim: true,
+  },
   password: String,
   cycleLength: { type: Number, default: 28 },
   periodLength: { type: Number, default: 5 },
