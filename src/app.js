@@ -7,15 +7,39 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/v1/partner", rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-}), require("./routes/partnerRoutes"));
+app.use(
+  "/api/v1/stats",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/statsRoutes"),
+);
+app.use(
+  "/api/v1/partner",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/statsRoutes"),
+);
+app.use(
+  "/api/v1/partner",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/partnerRoutes"),
+);
 
-app.use("/api/v1/notifications",rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-}), require("./routes/notificationRoutes"));
+app.use(
+  "/api/v1/notifications",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }),
+  require("./routes/notificationRoutes"),
+);
 
 app.use(
   "/api/v1/logs",

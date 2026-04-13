@@ -6,17 +6,13 @@ const { body, validationResult } = require("express-validator");
 
 exports.registerValidation = [
   body("email")
-    .notEmpty()
-    .withMessage("L'email est requis")
-    .isEmail()
-    .withMessage("Format d'email invalide")
+    .notEmpty().withMessage("L'email est requis")
+    .isEmail().withMessage("Format d'email invalide")
     .normalizeEmail(),
 
   body("password")
-    .notEmpty()
-    .withMessage("Le mot de passe est requis")
-    .isLength({ min: 6 })
-    .withMessage("Le mot de passe doit contenir au moins 6 caractères"),
+    .notEmpty().withMessage("Le mot de passe est requis")
+    .isLength({ min: 6 }).withMessage("Le mot de passe doit contenir au moins 6 caractères"),
 ];
 
 exports.register = async (req, res) => {
@@ -24,25 +20,24 @@ exports.register = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
+
   const { email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(409)
-        .json({ error: "Un compte avec cet email existe déjà" });
+      return res.status(409).json({ error: "Un compte avec cet email existe déjà" });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashedPassword });
 
-    res
-      .status(201)
-      .json({
-        message: "Compte créé avec succès",
-        user: { id: user.id, email: user.email },
-      });
+    res.status(201).json({ message: "Compte créé avec succès", user: { id: user._id, email: user.email } });
+
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: "Un compte avec cet email existe déjà" });
+    }
     console.error(err);
     res.status(500).json({ error: "Erreur serveur" });
   }
