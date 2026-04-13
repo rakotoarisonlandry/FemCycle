@@ -75,3 +75,28 @@ exports.getAccuracy = async (req, res) => {
     accuracy: accuracy.toFixed(2) + "%"
   });
 };
+
+exports.getInsights = async (req, res) => {
+  const logs = await Log.find({ userId: req.user.id });
+
+  let insights = [];
+
+  const highPainDays = logs.filter(l => l.pain >= 7).length;
+
+  if (highPainDays > 3) {
+    insights.push("Tu as souvent des douleurs élevées pendant ton cycle");
+  }
+
+  const moods = logs.map(l => l.mood);
+  const sadDays = moods.filter(m => m === "sad").length;
+
+  if (sadDays > logs.length * 0.4) {
+    insights.push("Ton humeur est souvent basse pendant ton cycle");
+  }
+
+  if (insights.length === 0) {
+    insights.push("Ton cycle semble stable, continue comme ça !");
+  }
+
+  res.json({ insights });
+};
