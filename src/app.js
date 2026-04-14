@@ -4,7 +4,10 @@ const { default: rateLimit } = require("express-rate-limit");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:8081"],
+  credentials: true,
+}));
 app.use(express.json());
 
 app.use(
